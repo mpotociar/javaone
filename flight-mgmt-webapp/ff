@@ -1,0 +1,4 @@
+#!/bin/sh
+
+git checkout stage-02
+mvn -o clean package -Dmaven.test.skip
