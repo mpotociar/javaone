@@ -55,6 +55,8 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.MediaType.APPLICATION_XML;
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 
+import javax.annotation.security.RolesAllowed;
+
 import org.glassfish.jersey.examples.flight.internal.DataStore;
 import org.glassfish.jersey.examples.flight.model.Aircraft;
 import org.glassfish.jersey.examples.flight.model.Flight;
@@ -110,6 +112,7 @@ public class FlightsResource {
 
     @POST
     @Consumes(APPLICATION_FORM_URLENCODED)
+    @RolesAllowed("admin")
     public Flight create(@ValidAircraftId @FormParam("aircraftId") Integer aircraftId) {
         final Aircraft aircraft = DataStore.selectAircraft(aircraftId);
 
@@ -129,6 +132,7 @@ public class FlightsResource {
     @DELETE
     @Path("{id}")
     @Produces(TEXT_PLAIN)
+    @RolesAllowed("admin")
     public String delete(@ValidFlightId @PathParam("id") String flightId) {
         Flight flight = DataStore.removeFlight(flightId);
         flight.getAircraft().marAvailable();
@@ -139,6 +143,7 @@ public class FlightsResource {
     @Path("{id}/status")
     @Consumes(APPLICATION_FORM_URLENCODED)
     @Produces(TEXT_PLAIN)
+    @RolesAllowed("admin")
     public String updateStatus(
             @ValidFlightId @PathParam("id") String flightId,
             @FormParam("status") String newStatus) {

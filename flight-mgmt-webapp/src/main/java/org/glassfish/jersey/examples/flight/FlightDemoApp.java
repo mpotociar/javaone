@@ -49,6 +49,7 @@ import org.glassfish.jersey.moxy.xml.MoxyXmlFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.ServerProperties;
 import org.glassfish.jersey.server.filter.HttpMethodOverrideFilter;
+import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
 
 /**
  * Flight management demo JAX-RS application.
@@ -85,7 +86,7 @@ public class FlightDemoApp extends ResourceConfig {
         property(ServerProperties.BV_SEND_ERROR_IN_RESPONSE, true);
 
         // Enable support for role-based authorization
-        // register(RolesAllowedDynamicFeature.class);
+        register(RolesAllowedDynamicFeature.class);
     }
 
     /**

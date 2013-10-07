@@ -57,6 +57,8 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.MediaType.APPLICATION_XML;
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 
+import javax.annotation.security.RolesAllowed;
+
 import org.glassfish.jersey.examples.flight.internal.DataStore;
 import org.glassfish.jersey.examples.flight.internal.SimEngine;
 import org.glassfish.jersey.examples.flight.model.Aircraft;
@@ -97,6 +99,7 @@ public class AircraftsResource {
     @DELETE
     @Path("{id}")
     @Produces(TEXT_PLAIN)
+    @RolesAllowed("admin")
     public String delete(@ValidAircraftId @PathParam("id") Integer id) {
         Flight flight = DataStore.selectFlightByAircraft(id);
         if (flight != null) {
@@ -109,6 +112,7 @@ public class AircraftsResource {
 
     @POST
     @Consumes(APPLICATION_FORM_URLENCODED)
+    @RolesAllowed("admin")
     public Aircraft create(
             @FormParam("manufacturer") String manufacturer,
             @FormParam("type") String type,
