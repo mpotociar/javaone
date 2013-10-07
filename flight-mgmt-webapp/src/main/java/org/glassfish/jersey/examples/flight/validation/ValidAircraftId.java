@@ -37,57 +37,49 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.jersey.examples.flight.providers;
+package org.glassfish.jersey.examples.flight.validation;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
+import static java.lang.annotation.ElementType.CONSTRUCTOR;
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.PARAMETER;
 
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.ext.MessageBodyWriter;
-import javax.ws.rs.ext.Provider;
+import javax.validation.Constraint;
+import javax.validation.ConstraintValidator;
+import javax.validation.ConstraintValidatorContext;
+import javax.validation.Payload;
 
-import org.glassfish.jersey.message.internal.ReaderWriter;
+import org.glassfish.jersey.examples.flight.internal.DataStore;
 
 /**
- * Experimental string writer.
+ * Check whether the validated value is a valid/existing aircraft identifier.
  *
  * @author Marek Potociar (marek.potociar at oracle.com)
  */
-@Provider
-@Produces({"text/plain", "*/*"})
-public class TestWriter implements MessageBodyWriter<String> {
-    public static final CountDownLatch latch = new CountDownLatch(1);
+@Retention(RetentionPolicy.RUNTIME)
+@Target({METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER})
+@Constraint(validatedBy = {ValidAircraftId.IntegerValidator.class})
+public @interface ValidAircraftId {
 
-    @Override
-    public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-        return type == String.class;
-    }
+    String message() default "{not.valid.aircraft.id}";
 
-    @Override
-    public long getSize(String s, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-        return s.length();
-    }
+    Class<?>[] groups() default {};
 
-    @Override
-    public void writeTo(String s,
-                        Class<?> type,
-                        Type genericType,
-                        Annotation[] annotations,
-                        MediaType mediaType,
-                        MultivaluedMap<String, Object> httpHeaders,
-                        OutputStream entityStream) throws IOException, WebApplicationException {
-        try {
-            latch.await(3, TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
+    Class<? extends Payload>[] payload() default {};
+
+    public class IntegerValidator implements ConstraintValidator<ValidAircraftId, Integer> {
+
+        @Override
+        public void initialize(final ValidAircraftId ann) {
         }
-        ReaderWriter.writeToAsString(s, entityStream, mediaType);
+
+        @Override
+        public boolean isValid(final Integer aircraftId, final ConstraintValidatorContext ctx) {
+            return DataStore.selectAircraft(aircraftId) != null;
+        }
     }
 }

@@ -37,63 +37,56 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.jersey.examples.flight;
+package org.glassfish.jersey.examples.flight.validation;
 
-import javax.ws.rs.ApplicationPath;
-import javax.ws.rs.ext.ContextResolver;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
+import static java.lang.annotation.ElementType.CONSTRUCTOR;
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.PARAMETER;
+
+import javax.validation.Constraint;
+import javax.validation.ConstraintValidator;
+import javax.validation.ConstraintValidatorContext;
+import javax.validation.Payload;
+import javax.validation.ReportAsSingleViolation;
 
 import org.glassfish.jersey.examples.flight.internal.DataStore;
-import org.glassfish.jersey.message.MessageProperties;
-import org.glassfish.jersey.moxy.json.MoxyJsonConfig;
-import org.glassfish.jersey.moxy.xml.MoxyXmlFeature;
-import org.glassfish.jersey.server.ResourceConfig;
-import org.glassfish.jersey.server.ServerProperties;
-import org.glassfish.jersey.server.filter.HttpMethodOverrideFilter;
+
+import org.hibernate.validator.constraints.Length;
+import org.hibernate.validator.constraints.NotBlank;
 
 /**
- * Flight management demo JAX-RS application.
+ * Check whether the validated value is a valid/existing flight identifier.
  *
  * @author Marek Potociar (marek.potociar at oracle.com)
  */
-@ApplicationPath("api")
-public class FlightDemoApp extends ResourceConfig {
-    public FlightDemoApp() {
-        // Generate data
-        DataStore.generateData();
+@Retention(RetentionPolicy.RUNTIME)
+@Target({METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER})
+@Constraint(validatedBy = ValidFlightId.StringValidator.class)
+@NotBlank
+@Length(min=7, max=7)
+@ReportAsSingleViolation
+public @interface ValidFlightId {
 
-        // Select packages to scan for resources and providers
-        packages("org.glassfish.jersey.examples.flight.resources",
-                "org.glassfish.jersey.examples.flight.providers");
+    String message() default "{not.valid.flight.id}";
 
-        // configure MOXy providers
-        // XML
-        register(MoxyXmlFeature.class);
-        property(MessageProperties.XML_FORMAT_OUTPUT, true);
-        // JSON
-        register(createMoxyJsonResolver());
+    Class<?>[] groups() default {};
 
-        // Enable on-demand tracing
-        property(ServerProperties.TRACING, "ON_DEMAND");
+    Class<? extends Payload>[] payload() default {};
 
-        // Enable monitoring MBeans
-        property(ServerProperties.MONITORING_STATISTICS_MBEANS_ENABLED, true);
+    public class StringValidator implements ConstraintValidator<ValidFlightId, String> {
 
-        // Support for HTTP method override via query parameter
-        register(new HttpMethodOverrideFilter(HttpMethodOverrideFilter.Source.QUERY));
+        @Override
+        public void initialize(final ValidFlightId ann) {
+        }
 
-        // Propagate validation errors to client
-        // property(ServerProperties.BV_SEND_ERROR_IN_RESPONSE, true);
-    }
-
-    /**
-     * Create {@link ContextResolver} for {@link MoxyJsonConfig} for this application.
-     *
-     * @return {@code MoxyJsonConfig} context resolver.
-     */
-    public static ContextResolver<MoxyJsonConfig> createMoxyJsonResolver() {
-        final MoxyJsonConfig moxyJsonConfig = new MoxyJsonConfig()
-                .setFormattedOutput(true)
-                .setNamespaceSeparator(':');
-        return moxyJsonConfig.resolver();
+        @Override
+        public boolean isValid(final String flightId, final ConstraintValidatorContext ctx) {
+            return DataStore.selectFlight(flightId) != null;
+        }
     }
 }
