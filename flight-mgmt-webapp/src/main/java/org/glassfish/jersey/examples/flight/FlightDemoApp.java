@@ -43,6 +43,7 @@ import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.ext.ContextResolver;
 
 import org.glassfish.jersey.examples.flight.internal.DataStore;
+import org.glassfish.jersey.media.sse.SseFeature;
 import org.glassfish.jersey.message.MessageProperties;
 import org.glassfish.jersey.message.filtering.EntityFilteringFeature;
 import org.glassfish.jersey.moxy.json.MoxyJsonConfig;
@@ -101,7 +102,7 @@ public class FlightDemoApp extends ResourceConfig {
         register(MvcBeanValidationFeature.class);
 
         // Enable SSE support
-        // register(SseFeature.class);
+        register(SseFeature.class);
     }
 
     /**
