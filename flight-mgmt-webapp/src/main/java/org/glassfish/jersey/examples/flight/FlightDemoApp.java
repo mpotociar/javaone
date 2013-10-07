@@ -87,6 +87,9 @@ public class FlightDemoApp extends ResourceConfig {
 
         // Enable support for role-based authorization
         register(RolesAllowedDynamicFeature.class);
+
+        // Enable JSON entity filtering
+        // register(EntityFilteringFeature.class);
     }
 
     /**
