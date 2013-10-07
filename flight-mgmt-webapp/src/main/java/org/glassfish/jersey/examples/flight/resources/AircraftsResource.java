@@ -107,23 +107,6 @@ public class AircraftsResource {
         return String.format("%03d", aircraft.getId());
     }
 
-    @GET
-    @Path("available")
-    public Collection<Aircraft> listAvailable() {
-        return DataStore.selectAvailableAircrafts();
-    }
-
-    @GET
-    @Path("available")
-    @Produces("text/plain;qs=0.5")
-    public String listAvailableAsString() {
-        StringBuilder sb = new StringBuilder();
-        for (Aircraft aircraft : listAvailable()) {
-            sb.append(aircraft).append('\n');
-        }
-        return sb.toString();
-    }
-
     @POST
     @Consumes(APPLICATION_FORM_URLENCODED)
     public Aircraft create(
@@ -145,5 +128,22 @@ public class AircraftsResource {
         }
 
         return aircraft;
+    }
+
+    @GET
+    @Path("available")
+    public Collection<Aircraft> listAvailable() {
+        return DataStore.selectAvailableAircrafts();
+    }
+
+    @GET
+    @Path("available")
+    @Produces("text/plain;qs=0.5")
+    public String listAvailableAsString() {
+        StringBuilder sb = new StringBuilder();
+        for (Aircraft aircraft : listAvailable()) {
+            sb.append(aircraft).append('\n');
+        }
+        return sb.toString();
     }
 }

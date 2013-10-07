@@ -83,6 +83,9 @@ public class FlightDemoApp extends ResourceConfig {
 
         // Propagate validation errors to client
         property(ServerProperties.BV_SEND_ERROR_IN_RESPONSE, true);
+
+        // Enable support for role-based authorization
+        // register(RolesAllowedDynamicFeature.class);
     }
 
     /**
