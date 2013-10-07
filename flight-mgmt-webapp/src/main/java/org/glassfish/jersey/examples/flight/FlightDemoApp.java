@@ -99,6 +99,9 @@ public class FlightDemoApp extends ResourceConfig {
         register(FreemarkerMvcFeature.class);
         property(FreemarkerProperties.TEMPLATES_BASE_PATH, "freemarker");
         register(MvcBeanValidationFeature.class);
+
+        // Enable SSE support
+        // register(SseFeature.class);
     }
 
     /**

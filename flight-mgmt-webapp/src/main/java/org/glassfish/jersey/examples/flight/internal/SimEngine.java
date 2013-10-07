@@ -39,7 +39,21 @@
  */
 package org.glassfish.jersey.examples.flight.internal;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import javax.ws.rs.core.MediaType;
+
+import org.glassfish.jersey.examples.flight.model.Flight;
+import org.glassfish.jersey.examples.flight.model.FlightLocation;
 import org.glassfish.jersey.examples.flight.model.Location;
+import org.glassfish.jersey.media.sse.EventOutput;
+import org.glassfish.jersey.media.sse.OutboundEvent;
+import org.glassfish.jersey.media.sse.SseBroadcaster;
 
 /**
  * Flight simulation engine.
@@ -55,6 +69,37 @@ public final class SimEngine {
      * Y-axis coordinate boundary.
      */
     public static int Y_BOUND = 350;
+    /**
+     * Simulation step executor.
+     */
+    private static final ScheduledExecutorService executor =
+            Executors.newSingleThreadScheduledExecutor();
+    /**
+     * SSE broadcaster.
+     */
+    private static final SseBroadcaster broadcaster = new SseBroadcaster();
+    /**
+     * Simulation engine status.
+     */
+    private static final AtomicBoolean started = new AtomicBoolean(false);
+
+    public static boolean register(EventOutput output) {
+        return broadcaster.add(output);
+    }
+
+    public static boolean start() {
+        if (!started.compareAndSet(false, true)) {
+            return false;
+        }
+
+        executor.submit(new SimRunner());
+
+        return true;
+    }
+
+    public static boolean stop() {
+        return started.compareAndSet(true, false);
+    }
 
     public static Location bound(Location location) {
         int x = location.getX();
@@ -71,5 +116,78 @@ public final class SimEngine {
         }
         return (x != location.getX() || y != location.getY())
                 ? new Location(x, y) : location;
+    }
+
+    private static class SimRunner implements Runnable {
+        private final List<Flight> flights;
+        private final List<Location> vectors;
+
+        private SimRunner() {
+            flights = DataStore.selectAllFlights();
+
+            vectors = new ArrayList<Location>(flights.size());
+            final int boundSpeedX = X_BOUND / 30;
+            final int boundSpeedY = Y_BOUND / 30;
+            int count = 0;
+            for (Flight flight : flights) {
+                flight.setStatus(Flight.Status.CLOSED);
+                Location vector = DataStore.generateLocation(boundSpeedX, boundSpeedY);
+                switch (count / 4) {
+                    case 0:
+                        vector.setX(-vector.getX());
+                        break;
+                    case 1:
+                        vector.setY(-vector.getY());
+                        break;
+                    case 2:
+                        vector.setX(-vector.getX());
+                        vector.setY(-vector.getY());
+                        break;
+                    case 3:
+                        // no change
+                        break;
+                }
+                vectors.add(vector);
+            }
+        }
+
+        @Override
+        public void run() {
+            final Thread currentThread = Thread.currentThread();
+            for (int i = 0; i < flights.size(); i++) {
+                if (!started.get() || currentThread.isInterrupted()) {
+                    cleanup();
+                    return;
+                }
+
+                final Flight flight = flights.get(i);
+                final Location vector = vectors.get(i);
+                Location newLocation = new Location(
+                        flight.getAircraft().getLocation().getX() + vector.getX(),
+                        flight.getAircraft().getLocation().getY() + vector.getY()
+                );
+                newLocation = bound(newLocation);
+                flight.getAircraft().setLocation(newLocation);
+
+                OutboundEvent flightMovedEvent = new OutboundEvent.Builder()
+                        .mediaType(MediaType.APPLICATION_JSON_TYPE)
+                        .data(new FlightLocation(flight.getId(), newLocation))
+                        .build();
+
+                broadcaster.broadcast(flightMovedEvent);
+            }
+
+            if (started.get() && !currentThread.isInterrupted()) {
+                executor.schedule(this, 500, TimeUnit.MILLISECONDS); // re-schedule
+            } else {
+                cleanup();
+            }
+        }
+
+        private void cleanup() {
+            for (Flight flight : flights) {
+                flight.setStatus(Flight.Status.OPEN);
+            }
+        }
     }
 }

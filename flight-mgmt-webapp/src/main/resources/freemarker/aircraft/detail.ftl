@@ -107,6 +107,7 @@
                 <ul class="nav nav-pills">
                     <li><a href="/api/flights">All Flights</a></li>
                     <li><a href="/api/aircrafts">All Aircrafts</a></li>
+                    <li><a href="/simulation.html">Simulation</a></li>
                 </ul>
             </footer>
         </div>
