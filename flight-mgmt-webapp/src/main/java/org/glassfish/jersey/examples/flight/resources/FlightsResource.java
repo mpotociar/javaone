@@ -77,6 +77,28 @@ public class FlightsResource {
         return DataStore.selectAllFlights();
     }
 
+//    @GET
+//    @Produces(TEXT_HTML)
+//    @Template(name = "/flight/list")
+//    public Collection<Flight> listAsHtml() {
+//        return list();
+//    }
+
+
+//    @GET
+//    @Produces("text/csv")
+//    public Viewable listAsCsv() {
+//        return new Viewable("/flight/list-csv", list());
+//    }
+//
+//
+//    @GET
+//    @Produces("application/x-yaml")
+//    @Template(name = "/flight/list-yaml")
+//    public Collection<Flight> listAsYaml() {
+//        return list();
+//    }
+
     @GET
     @Produces("text/plain;qs=0.5")
     public String listAsString() {
@@ -93,6 +115,15 @@ public class FlightsResource {
     public Flight get(@ValidFlightId @PathParam("id") String flightId) {
         return DataStore.selectFlight(flightId);
     }
+
+//    @GET
+//    @Path("{id}")
+//    @Produces(TEXT_HTML)
+//    @Template(name = "/flight/detail")
+//    @ErrorTemplate(name = "/errors/404")
+//    public Flight getAsHtml(@ValidFlightId @PathParam("id") String flightId) {
+//        return get(flightId);
+//    }
 
     @POST
     @Path("{id}/new-booking")
@@ -111,6 +142,16 @@ public class FlightsResource {
         }
         return ridString;
     }
+
+//    @POST
+//    @Path("{id}/new-booking")
+//    @Produces(TEXT_HTML)
+//    public Viewable bookAsHtml(@PathParam("id") String flightId) {
+//        Map<String, Object> model = new HashMap<String, Object>();
+//        model.put("flightId", flightId);
+//        model.put("reservationId", book(flightId));
+//        return new Viewable("/flight/reservation", model);
+//    }
 
     @POST
     @Consumes(APPLICATION_FORM_URLENCODED)

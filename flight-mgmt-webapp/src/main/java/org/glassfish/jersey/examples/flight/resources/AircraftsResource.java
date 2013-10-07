@@ -81,6 +81,13 @@ public class AircraftsResource {
         return DataStore.selectAllAircrafts();
     }
 
+//    @GET
+//    @Produces(TEXT_HTML)
+//    @Template(name = "/aircraft/list")
+//    public Collection<Aircraft> listAsHtml() {
+//        return list();
+//    }
+
     @GET
     @Produces("text/plain;qs=0.5")
     public String listAsString() {
@@ -97,6 +104,15 @@ public class AircraftsResource {
     public Aircraft get(@ValidAircraftId @PathParam("id") Integer aircraftId) {
         return DataStore.selectAircraft(aircraftId);
     }
+
+//    @GET
+//    @Path("{id}")
+//    @Produces(TEXT_HTML)
+//    @Template(name = "/aircraft/detail")
+//    @ErrorTemplate(name = "/errors/404")
+//    public Aircraft getAsHtml(@ValidAircraftId @PathParam("id") Integer id) {
+//        return get(id);
+//    }
 
     @DELETE
     @Path("{id}")

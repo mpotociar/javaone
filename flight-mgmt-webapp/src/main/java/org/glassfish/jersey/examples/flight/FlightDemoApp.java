@@ -91,6 +91,11 @@ public class FlightDemoApp extends ResourceConfig {
 
         // Enable JSON entity filtering
         register(EntityFilteringFeature.class);
+
+        // Enable MVC FreeMarker templating engine
+        // register(FreemarkerMvcFeature.class);
+        // property(FreemarkerProperties.TEMPLATES_BASE_PATH, "freemarker");
+        // register(MvcBeanValidationFeature.class);
     }
 
     /**
