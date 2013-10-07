@@ -55,6 +55,7 @@ import javax.ws.rs.Produces;
 import static javax.ws.rs.core.MediaType.APPLICATION_FORM_URLENCODED;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.MediaType.APPLICATION_XML;
+import static javax.ws.rs.core.MediaType.TEXT_HTML;
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 
 import javax.annotation.security.RolesAllowed;
@@ -67,6 +68,8 @@ import org.glassfish.jersey.examples.flight.model.AircraftType;
 import org.glassfish.jersey.examples.flight.model.Flight;
 import org.glassfish.jersey.examples.flight.model.Location;
 import org.glassfish.jersey.examples.flight.validation.ValidAircraftId;
+import org.glassfish.jersey.server.mvc.ErrorTemplate;
+import org.glassfish.jersey.server.mvc.Template;
 
 /**
  * JAX-RS resource for accessing & manipulating flight information.
@@ -81,12 +84,12 @@ public class AircraftsResource {
         return DataStore.selectAllAircrafts();
     }
 
-//    @GET
-//    @Produces(TEXT_HTML)
-//    @Template(name = "/aircraft/list")
-//    public Collection<Aircraft> listAsHtml() {
-//        return list();
-//    }
+    @GET
+    @Produces(TEXT_HTML)
+    @Template(name = "/aircraft/list")
+    public Collection<Aircraft> listAsHtml() {
+        return list();
+    }
 
     @GET
     @Produces("text/plain;qs=0.5")
@@ -105,14 +108,14 @@ public class AircraftsResource {
         return DataStore.selectAircraft(aircraftId);
     }
 
-//    @GET
-//    @Path("{id}")
-//    @Produces(TEXT_HTML)
-//    @Template(name = "/aircraft/detail")
-//    @ErrorTemplate(name = "/errors/404")
-//    public Aircraft getAsHtml(@ValidAircraftId @PathParam("id") Integer id) {
-//        return get(id);
-//    }
+    @GET
+    @Path("{id}")
+    @Produces(TEXT_HTML)
+    @Template(name = "/aircraft/detail")
+    @ErrorTemplate(name = "/errors/404")
+    public Aircraft getAsHtml(@ValidAircraftId @PathParam("id") Integer id) {
+        return get(id);
+    }
 
     @DELETE
     @Path("{id}")

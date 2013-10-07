@@ -51,6 +51,9 @@ import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.ServerProperties;
 import org.glassfish.jersey.server.filter.HttpMethodOverrideFilter;
 import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
+import org.glassfish.jersey.server.mvc.beanvalidation.MvcBeanValidationFeature;
+import org.glassfish.jersey.server.mvc.freemarker.FreemarkerMvcFeature;
+import org.glassfish.jersey.server.mvc.freemarker.FreemarkerProperties;
 
 /**
  * Flight management demo JAX-RS application.
@@ -93,9 +96,9 @@ public class FlightDemoApp extends ResourceConfig {
         register(EntityFilteringFeature.class);
 
         // Enable MVC FreeMarker templating engine
-        // register(FreemarkerMvcFeature.class);
-        // property(FreemarkerProperties.TEMPLATES_BASE_PATH, "freemarker");
-        // register(MvcBeanValidationFeature.class);
+        register(FreemarkerMvcFeature.class);
+        property(FreemarkerProperties.TEMPLATES_BASE_PATH, "freemarker");
+        register(MvcBeanValidationFeature.class);
     }
 
     /**

@@ -40,6 +40,8 @@
 package org.glassfish.jersey.examples.flight.resources;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.Consumes;
@@ -53,6 +55,7 @@ import javax.ws.rs.Produces;
 import static javax.ws.rs.core.MediaType.APPLICATION_FORM_URLENCODED;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static javax.ws.rs.core.MediaType.APPLICATION_XML;
+import static javax.ws.rs.core.MediaType.TEXT_HTML;
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 
 import javax.annotation.security.RolesAllowed;
@@ -63,6 +66,9 @@ import org.glassfish.jersey.examples.flight.model.Aircraft;
 import org.glassfish.jersey.examples.flight.model.Flight;
 import org.glassfish.jersey.examples.flight.validation.ValidAircraftId;
 import org.glassfish.jersey.examples.flight.validation.ValidFlightId;
+import org.glassfish.jersey.server.mvc.ErrorTemplate;
+import org.glassfish.jersey.server.mvc.Template;
+import org.glassfish.jersey.server.mvc.Viewable;
 
 /**
  * JAX-RS resource for accessing & manipulating flight information.
@@ -77,27 +83,27 @@ public class FlightsResource {
         return DataStore.selectAllFlights();
     }
 
-//    @GET
-//    @Produces(TEXT_HTML)
-//    @Template(name = "/flight/list")
-//    public Collection<Flight> listAsHtml() {
-//        return list();
-//    }
+    @GET
+    @Produces(TEXT_HTML)
+    @Template(name = "/flight/list")
+    public Collection<Flight> listAsHtml() {
+        return list();
+    }
 
 
-//    @GET
-//    @Produces("text/csv")
-//    public Viewable listAsCsv() {
-//        return new Viewable("/flight/list-csv", list());
-//    }
-//
-//
-//    @GET
-//    @Produces("application/x-yaml")
-//    @Template(name = "/flight/list-yaml")
-//    public Collection<Flight> listAsYaml() {
-//        return list();
-//    }
+    @GET
+    @Produces("text/csv")
+    public Viewable listAsCsv() {
+        return new Viewable("/flight/list-csv", list());
+    }
+
+
+    @GET
+    @Produces("application/x-yaml")
+    @Template(name = "/flight/list-yaml")
+    public Collection<Flight> listAsYaml() {
+        return list();
+    }
 
     @GET
     @Produces("text/plain;qs=0.5")
@@ -116,14 +122,14 @@ public class FlightsResource {
         return DataStore.selectFlight(flightId);
     }
 
-//    @GET
-//    @Path("{id}")
-//    @Produces(TEXT_HTML)
-//    @Template(name = "/flight/detail")
-//    @ErrorTemplate(name = "/errors/404")
-//    public Flight getAsHtml(@ValidFlightId @PathParam("id") String flightId) {
-//        return get(flightId);
-//    }
+    @GET
+    @Path("{id}")
+    @Produces(TEXT_HTML)
+    @Template(name = "/flight/detail")
+    @ErrorTemplate(name = "/errors/404")
+    public Flight getAsHtml(@ValidFlightId @PathParam("id") String flightId) {
+        return get(flightId);
+    }
 
     @POST
     @Path("{id}/new-booking")
@@ -143,15 +149,15 @@ public class FlightsResource {
         return ridString;
     }
 
-//    @POST
-//    @Path("{id}/new-booking")
-//    @Produces(TEXT_HTML)
-//    public Viewable bookAsHtml(@PathParam("id") String flightId) {
-//        Map<String, Object> model = new HashMap<String, Object>();
-//        model.put("flightId", flightId);
-//        model.put("reservationId", book(flightId));
-//        return new Viewable("/flight/reservation", model);
-//    }
+    @POST
+    @Path("{id}/new-booking")
+    @Produces(TEXT_HTML)
+    public Viewable bookAsHtml(@PathParam("id") String flightId) {
+        Map<String, Object> model = new HashMap<String, Object>();
+        model.put("flightId", flightId);
+        model.put("reservationId", book(flightId));
+        return new Viewable("/flight/reservation", model);
+    }
 
     @POST
     @Consumes(APPLICATION_FORM_URLENCODED)
