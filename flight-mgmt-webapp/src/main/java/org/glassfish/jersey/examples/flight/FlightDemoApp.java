@@ -47,6 +47,8 @@ import org.glassfish.jersey.message.MessageProperties;
 import org.glassfish.jersey.moxy.json.MoxyJsonConfig;
 import org.glassfish.jersey.moxy.xml.MoxyXmlFeature;
 import org.glassfish.jersey.server.ResourceConfig;
+import org.glassfish.jersey.server.ServerProperties;
+import org.glassfish.jersey.server.filter.HttpMethodOverrideFilter;
 
 /**
  * Flight management demo JAX-RS application.
@@ -71,13 +73,13 @@ public class FlightDemoApp extends ResourceConfig {
         register(createMoxyJsonResolver());
 
         // Enable on-demand tracing
-        // property(ServerProperties.TRACING, "ON_DEMAND");
+        property(ServerProperties.TRACING, "ON_DEMAND");
 
         // Enable monitoring MBeans
-        // property(ServerProperties.MONITORING_STATISTICS_MBEANS_ENABLED, true);
+        property(ServerProperties.MONITORING_STATISTICS_MBEANS_ENABLED, true);
 
         // Support for HTTP method override via query parameter
-        // register(new HttpMethodOverrideFilter(HttpMethodOverrideFilter.Source.QUERY));
+        register(new HttpMethodOverrideFilter(HttpMethodOverrideFilter.Source.QUERY));
     }
 
     /**
