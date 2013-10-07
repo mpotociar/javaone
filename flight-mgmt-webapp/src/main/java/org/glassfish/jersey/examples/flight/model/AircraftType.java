@@ -42,6 +42,8 @@ package org.glassfish.jersey.examples.flight.model;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 
+import org.glassfish.jersey.examples.flight.filtering.Detail;
+
 /**
  * Aircraft type.
  *
@@ -52,6 +54,7 @@ public class AircraftType {
 
     private String manufacturer;
     private String model;
+    @Detail
     private int capacity;
 
 

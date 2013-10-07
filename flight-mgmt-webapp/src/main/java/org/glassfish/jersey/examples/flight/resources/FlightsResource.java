@@ -57,6 +57,7 @@ import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 
 import javax.annotation.security.RolesAllowed;
 
+import org.glassfish.jersey.examples.flight.filtering.Detail;
 import org.glassfish.jersey.examples.flight.internal.DataStore;
 import org.glassfish.jersey.examples.flight.model.Aircraft;
 import org.glassfish.jersey.examples.flight.model.Flight;
@@ -88,6 +89,7 @@ public class FlightsResource {
 
     @GET
     @Path("{id}")
+    @Detail
     public Flight get(@ValidFlightId @PathParam("id") String flightId) {
         return DataStore.selectFlight(flightId);
     }
@@ -113,6 +115,7 @@ public class FlightsResource {
     @POST
     @Consumes(APPLICATION_FORM_URLENCODED)
     @RolesAllowed("admin")
+    @Detail
     public Flight create(@ValidAircraftId @FormParam("aircraftId") Integer aircraftId) {
         final Aircraft aircraft = DataStore.selectAircraft(aircraftId);
 

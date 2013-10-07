@@ -43,6 +43,8 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.glassfish.jersey.examples.flight.filtering.Detail;
+
 /**
  * Aircraft data model representation.
  *
@@ -55,6 +57,7 @@ public class Aircraft {
     private Integer id;
     private Status status = Status.AVAILABLE;
     private AircraftType type;
+    @Detail
     private Location location;
 
 

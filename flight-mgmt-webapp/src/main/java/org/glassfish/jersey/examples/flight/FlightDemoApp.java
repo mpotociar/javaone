@@ -44,6 +44,7 @@ import javax.ws.rs.ext.ContextResolver;
 
 import org.glassfish.jersey.examples.flight.internal.DataStore;
 import org.glassfish.jersey.message.MessageProperties;
+import org.glassfish.jersey.message.filtering.EntityFilteringFeature;
 import org.glassfish.jersey.moxy.json.MoxyJsonConfig;
 import org.glassfish.jersey.moxy.xml.MoxyXmlFeature;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -89,7 +90,7 @@ public class FlightDemoApp extends ResourceConfig {
         register(RolesAllowedDynamicFeature.class);
 
         // Enable JSON entity filtering
-        // register(EntityFilteringFeature.class);
+        register(EntityFilteringFeature.class);
     }
 
     /**
