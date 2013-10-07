@@ -48,7 +48,6 @@ import javax.ws.rs.DefaultValue;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.InternalServerErrorException;
-import javax.ws.rs.NotFoundException;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -64,6 +63,7 @@ import org.glassfish.jersey.examples.flight.model.Aircraft;
 import org.glassfish.jersey.examples.flight.model.AircraftType;
 import org.glassfish.jersey.examples.flight.model.Flight;
 import org.glassfish.jersey.examples.flight.model.Location;
+import org.glassfish.jersey.examples.flight.validation.ValidAircraftId;
 
 /**
  * JAX-RS resource for accessing & manipulating flight information.
@@ -90,30 +90,20 @@ public class AircraftsResource {
 
     @GET
     @Path("{id}")
-    public Aircraft get(@PathParam("id") Integer aircraftId) {
-        final Aircraft aircraft = DataStore.selectAircraft(aircraftId);
-
-        if (aircraft == null) {
-            throw new NotFoundException("Aircraft not found.");
-        }
-
-        return aircraft;
+    public Aircraft get(@ValidAircraftId @PathParam("id") Integer aircraftId) {
+        return DataStore.selectAircraft(aircraftId);
     }
 
     @DELETE
     @Path("{id}")
     @Produces(TEXT_PLAIN)
-    public String delete(@PathParam("id") Integer id) {
+    public String delete(@ValidAircraftId @PathParam("id") Integer id) {
         Flight flight = DataStore.selectFlightByAircraft(id);
         if (flight != null) {
             throw new BadRequestException("Aircraft assigned to a flight.");
         }
 
         Aircraft aircraft = DataStore.removeAircraft(id);
-        if (aircraft == null) {
-            throw new BadRequestException("No such aircraft.");
-        }
-
         return String.format("%03d", aircraft.getId());
     }
 

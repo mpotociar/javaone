@@ -82,7 +82,7 @@ public class FlightDemoApp extends ResourceConfig {
         register(new HttpMethodOverrideFilter(HttpMethodOverrideFilter.Source.QUERY));
 
         // Propagate validation errors to client
-        // property(ServerProperties.BV_SEND_ERROR_IN_RESPONSE, true);
+        property(ServerProperties.BV_SEND_ERROR_IN_RESPONSE, true);
     }
 
     /**

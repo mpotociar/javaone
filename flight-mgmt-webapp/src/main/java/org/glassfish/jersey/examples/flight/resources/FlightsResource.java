@@ -46,7 +46,6 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
-import javax.ws.rs.NotFoundException;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -59,6 +58,8 @@ import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 import org.glassfish.jersey.examples.flight.internal.DataStore;
 import org.glassfish.jersey.examples.flight.model.Aircraft;
 import org.glassfish.jersey.examples.flight.model.Flight;
+import org.glassfish.jersey.examples.flight.validation.ValidAircraftId;
+import org.glassfish.jersey.examples.flight.validation.ValidFlightId;
 
 /**
  * JAX-RS resource for accessing & manipulating flight information.
@@ -85,25 +86,15 @@ public class FlightsResource {
 
     @GET
     @Path("{id}")
-    public Flight get(@PathParam("id") String flightId) {
-        final Flight flight = DataStore.selectFlight(flightId);
-
-        if (flight == null) {
-            throw new NotFoundException("Flight not found.");
-        }
-
-        return flight;
+    public Flight get(@ValidFlightId @PathParam("id") String flightId) {
+        return DataStore.selectFlight(flightId);
     }
 
     @POST
     @Path("{id}/new-booking")
     @Produces(TEXT_PLAIN)
-    public String book(@PathParam("id") String flightId) {
+    public String book(@ValidFlightId @PathParam("id") String flightId) {
         final Flight flight = DataStore.selectFlight(flightId);
-
-        if (flight == null) {
-            throw new NotFoundException("Flight not found.");
-        }
 
         if (!flight.isOpen()) {
             throw new BadRequestException("Flight closed.");
@@ -119,12 +110,9 @@ public class FlightsResource {
 
     @POST
     @Consumes(APPLICATION_FORM_URLENCODED)
-    public Flight create(@FormParam("aircraftId") Integer aircraftId) {
+    public Flight create(@ValidAircraftId @FormParam("aircraftId") Integer aircraftId) {
         final Aircraft aircraft = DataStore.selectAircraft(aircraftId);
 
-        if (aircraft == null) {
-            throw new BadRequestException("No such aircraft.");
-        }
         if (!aircraft.marAssigned()) {
             throw new BadRequestException("Aircraft already assigned.");
         }
@@ -141,12 +129,8 @@ public class FlightsResource {
     @DELETE
     @Path("{id}")
     @Produces(TEXT_PLAIN)
-    public String delete(@PathParam("id") String flightId) {
+    public String delete(@ValidFlightId @PathParam("id") String flightId) {
         Flight flight = DataStore.removeFlight(flightId);
-        if (flight == null) {
-            throw new BadRequestException("No such flight.");
-        }
-
         flight.getAircraft().marAvailable();
         return flight.getId();
     }
@@ -156,7 +140,7 @@ public class FlightsResource {
     @Consumes(APPLICATION_FORM_URLENCODED)
     @Produces(TEXT_PLAIN)
     public String updateStatus(
-            @PathParam("id") String flightId,
+            @ValidFlightId @PathParam("id") String flightId,
             @FormParam("status") String newStatus) {
 
         Flight.Status status;
@@ -167,10 +151,6 @@ public class FlightsResource {
         }
 
         final Flight flight = DataStore.selectFlight(flightId);
-
-        if (flight == null) {
-            throw new NotFoundException("Flight not found.");
-        }
 
         flight.setStatus(status);
 
